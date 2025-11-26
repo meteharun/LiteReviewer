@@ -7,7 +7,6 @@ name = "litereviewer"
 version = "0.1.0"
 description = "LLM-based code review tool for GitHub PRs"
 authors = [{ name = "Mete Harun Akcay" }]
-readme = "README.md"
 requires-python = ">=3.10"
 
 dependencies = [
