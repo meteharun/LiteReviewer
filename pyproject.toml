@@ -12,11 +12,10 @@ requires-python = ">=3.10"
 
 # TODO: replace this list with the actual contents of your requirements.txt
 dependencies = [
-    "certifi==2025.11.12"
-    "idna==3.11"
-    "pandas==2.3.3"
-    "PyGithub==2.8.1"
-    "requests==2.32.5"
+    "certifi==2025.11.12",
+    "idna==3.11",
+    "pandas==2.3.3",
+    "PyGithub==2.8.1",
+    "requests==2.32.5",
     "urllib3==2.5.0"
-
-]
+    ]
