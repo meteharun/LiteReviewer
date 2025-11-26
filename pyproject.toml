@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "litereviewer"
+version = "0.0.1"
+description = "Lightweight LLM-based PR reviewer."
+readme = "README.md"
+requires-python = ">=3.9"
+authors = [
+  { name = "Mete Harun Akçay" }
+]
+
+# Copy your runtime deps here (names only) from requirements.txt
+dependencies = [
+  "openai",
+  "httpx",
+  "tqdm",
+  "pydantic",
+  "pandas",
+]
