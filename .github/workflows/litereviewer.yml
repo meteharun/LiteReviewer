@@ -1,0 +1,55 @@
+name: LiteReviewer
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write   # needed to post review comments
+
+concurrency:
+  group: litereviewer-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install deps
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e .
+
+      # Optional: skip very large PRs
+      - name: Quick PR size guard
+        id: guard
+        run: |
+          CHANGED_FILES=$(curl -sSL -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/files?per_page=1" \
+            | jq -r 'length')
+          echo "files=$CHANGED_FILES" >> $GITHUB_OUTPUT
+
+      # If the PR comes from a fork, run in DRY-RUN mode (safe default)
+      - name: Run LiteReviewer
+        env:
+          # Prefer the automatic GITHUB_TOKEN; your code already supports github_token.txt fallback.
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          python -m lite_reviewer.runner \
+            "${{ github.repository }}" \
+            "${{ github.event.pull_request.number }}" \
+            --model phi \
+            --shot zero \
+            $([[ "${{ github.event.pull_request.head.repo.fork }}" == "true" ]] && echo "--dry-run")
