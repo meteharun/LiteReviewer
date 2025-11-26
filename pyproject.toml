@@ -6,11 +6,10 @@ build-backend = "setuptools.build_meta"
 name = "litereviewer"
 version = "0.1.0"
 description = "LLM-based code review tool for GitHub PRs"
-authors = [{ name = "Harun Akçay" }]
-readme = "README.md"
+authors = [{ name = "Mete Harun Akcay" }]
+# readme = "README.md"
 requires-python = ">=3.10"
 
-# TODO: replace this list with the actual contents of your requirements.txt
 dependencies = [
     "certifi==2025.11.12",
     "idna==3.11",
