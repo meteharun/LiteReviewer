@@ -14,12 +14,23 @@ import requests
 # =========================
 
 # <repo_root>/lite_reviewer/common.py  -> repo_root
-REPO_ROOT = Path(__file__).resolve().parents[1]
+# REPO_ROOT = Path(__file__).resolve().parents[1]
+# DATA_DIR = REPO_ROOT / "data"
+# PROMPTS_DIR = REPO_ROOT / "prompts"
+# TOKEN_PATH = REPO_ROOT / "github_token.txt"
+
+# DATA_DIR.mkdir(parents=True, exist_ok=True)
+
+# Package root: .../site-packages/lite_reviewer
+REPO_ROOT = Path(__file__).resolve().parent
+
 DATA_DIR = REPO_ROOT / "data"
 PROMPTS_DIR = REPO_ROOT / "prompts"
 TOKEN_PATH = REPO_ROOT / "github_token.txt"
 
 DATA_DIR.mkdir(parents=True, exist_ok=True)
+
+
 
 # Deterministic, human-readable filenames
 def repo_key(owner_repo: str, pr_number: int) -> str:

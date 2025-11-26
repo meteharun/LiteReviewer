@@ -1,0 +1,1 @@
+{"repo": "meteharun/SparePart_Predictor", "pr_id": 3, "path": "test_litereviewer.txt", "status": "added", "previous_filename": null, "patch": "@@ -0,0 +1 @@\n+hello world", "hunks": [{"header": "@@ -0,0 +1 @@", "old_start": 0, "old_len": 0, "new_start": 1, "new_len": 1, "lines": [{"tag": "+", "text": "hello world", "old": null, "new": 1}]}], "position_table": {"1": 1}}
