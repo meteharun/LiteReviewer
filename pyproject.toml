@@ -1,22 +1,22 @@
 [build-system]
-requires = ["setuptools", "wheel"]
+requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "litereviewer"
-version = "0.0.1"
-description = "Lightweight LLM-based PR reviewer."
+version = "0.1.0"
+description = "LLM-based code review tool for GitHub PRs"
+authors = [{ name = "Harun Akçay" }]
 readme = "README.md"
-requires-python = ">=3.9"
-authors = [
-  { name = "Mete Harun Akçay" }
-]
+requires-python = ">=3.10"
 
-# Copy your runtime deps here (names only) from requirements.txt
+# TODO: replace this list with the actual contents of your requirements.txt
 dependencies = [
-  "openai",
-  "httpx",
-  "tqdm",
-  "pydantic",
-  "pandas",
+    "certifi==2025.11.12"
+    "idna==3.11"
+    "pandas==2.3.3"
+    "PyGithub==2.8.1"
+    "requests==2.32.5"
+    "urllib3==2.5.0"
+
 ]
