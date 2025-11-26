@@ -165,6 +165,59 @@ def _post_hunk_review(repo: str, pr: int, token: str,
     else:
         log_err(f"Failed to create review: {r.status_code} {r.text}")
 
+# def post_from_reviews(owner_repo: str, pr: int, model_key: str, shot: str, dry_run: bool = False):
+#     token = load_github_token()
+#     if not token:
+#         log_err("GITHUB_TOKEN not set or missing in github_token.txt")
+#         sys.exit(1)
+
+#     model_id = resolve_model(model_key)
+#     diff_file = diff_path(owner_repo, pr)
+#     rev_file  = reviews_path(owner_repo, pr, model_id, shot)
+
+#     log_info(f"Posting comments from {rev_file}")
+
+#     # Load diff hunk spans (for mapping chosen_position → hunk)
+#     hunk_spans = _load_hunk_spans(diff_file)
+
+#     try:
+#         with open(rev_file, "r", encoding="utf-8") as f:
+#             rows = [json.loads(l) for l in f if l.strip()]
+#     except FileNotFoundError:
+#         log_err(f"Reviews file not found: {rev_file}")
+#         sys.exit(1)
+
+#     posted = 0
+#     for r in rows:
+#         if r.get("parse_fail"):
+#             continue
+#         body = (r.get("generated_comment") or "").strip()
+#         if not body:
+#             continue
+#         path = r.get("file_path")
+#         if not path:
+#             continue
+
+#         # 1) Try span directly from row hunk bounds
+#         span = _span_from_row_basic(r)
+#         # 2) Fallback: map chosen_position → hunk from diff file
+#         if not span:
+#             chosen_pos = r.get("chosen_position")
+#             span = _span_from_position(path, chosen_pos, hunk_spans)
+
+#         if not span:
+#             # Nothing we can do for this row
+#             continue
+
+#         _post_hunk_review(owner_repo, pr, token, span, body, dry_run=dry_run)
+#         posted += 1
+
+#     if posted == 0:
+#         log_info("No comments to post after filtering.")
+#     else:
+#         log_info(f"Posted {posted} comment(s).")
+
+
 def post_from_reviews(owner_repo: str, pr: int, model_key: str, shot: str, dry_run: bool = False):
     token = load_github_token()
     if not token:
@@ -177,9 +230,15 @@ def post_from_reviews(owner_repo: str, pr: int, model_key: str, shot: str, dry_r
 
     log_info(f"Posting comments from {rev_file}")
 
-    # Load diff hunk spans (for mapping chosen_position → hunk)
+    # Load diff hunk spans
     hunk_spans = _load_hunk_spans(diff_file)
 
+    # DEBUG: print span info
+    print("=== DEBUG: Loaded hunk spans ===")
+    for path, spans in hunk_spans.items():
+        print(f"  File: {path}, spans: {spans}")
+
+    # Load rows
     try:
         with open(rev_file, "r", encoding="utf-8") as f:
             rows = [json.loads(l) for l in f if l.strip()]
@@ -187,27 +246,53 @@ def post_from_reviews(owner_repo: str, pr: int, model_key: str, shot: str, dry_r
         log_err(f"Reviews file not found: {rev_file}")
         sys.exit(1)
 
+    # DEBUG: show loaded rows
+    print(f"=== DEBUG: Loaded {len(rows)} review rows ===")
+    if rows:
+        print("=== DEBUG: Keys in first row ===")
+        print(list(rows[0].keys()))
+        print("=== DEBUG: First row content ===")
+        print(json.dumps(rows[0], indent=2))
+
     posted = 0
-    for r in rows:
+    for idx, r in enumerate(rows, start=1):
+
+        # DEBUG per-row
+        print(f"\n=== DEBUG: Row {idx} ===")
+        print(json.dumps(r, indent=2))
+
         if r.get("parse_fail"):
-            continue
-        body = (r.get("generated_comment") or "").strip()
-        if not body:
-            continue
-        path = r.get("file_path")
-        if not path:
+            print("  -> parse_fail=True, skipping")
             continue
 
-        # 1) Try span directly from row hunk bounds
+        body = (r.get("generated_comment") or "").strip()
+        print(f"  generated_comment = {repr(body)}")
+
+        if not body:
+            print("  -> Empty body, skipping")
+            continue
+
+        path = r.get("file_path")
+        print(f"  file_path = {repr(path)}")
+        if not path:
+            print("  -> No file_path, skipping")
+            continue
+
+        # Try row-basic span
         span = _span_from_row_basic(r)
-        # 2) Fallback: map chosen_position → hunk from diff file
+        print(f"  span_from_row_basic = {span}")
+
         if not span:
             chosen_pos = r.get("chosen_position")
+            print(f"  chosen_position = {chosen_pos}")
             span = _span_from_position(path, chosen_pos, hunk_spans)
+            print(f"  span_from_position = {span}")
 
         if not span:
-            # Nothing we can do for this row
+            print("  -> No span, skipping")
             continue
+
+        print("  -> Passing filters, WILL POST this comment")
 
         _post_hunk_review(owner_repo, pr, token, span, body, dry_run=dry_run)
         posted += 1
