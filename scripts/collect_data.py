@@ -7,7 +7,7 @@ from github import Github, GithubException
 TOKEN_PATH = "github_token.txt"
 
 REPO_LIST_PATH = r"C:\Users\msi-nb\Desktop\AIS\LiteReviewer\dataset\top_python_repos.jsonl"
-OUTPUT_PATH = r"C:\Users\msi-nb\Desktop\AIS\LiteReviewer\dataset\pr_review_samples.jsonl"
+OUTPUT_PATH = r"C:\Users\msi-nb\Desktop\AIS\LiteReviewer\dataset\pr_review_samples5.jsonl"
 
 MAX_EXAMPLES_PER_REPO = 100
 MAX_PRS_TO_SCAN = 300
